@@ -39,7 +39,6 @@ class Database():
             try:
                 result = func(self, connection, *args, **kwargs)
             except Exception as e:
-                print(e)
                 result = {"error": str(e)}
                 connection.rollback()
             connection.close()
@@ -67,6 +66,14 @@ class Database():
     def register_user(self, connection, data):
         with connection.cursor() as cursor:
             query = Query.insert_user(data['username'],data['password'],data['first_name'],data['last_name'],data['phone'],data['street'],data['city'],data['zipcode'])
+            cursor.execute(query)
+            connection.commit()
+            return True
+
+    @connect
+    def create_election(self, connection, data):
+        with connection.cursor() as cursor:
+            query = Query.insert_auction(data['title'], data['description'], data['minimum_price'], data['start_time'], data['end_time'], data['product_id'], data['product_description'], data['person_id'])
             cursor.execute(query)
             connection.commit()
             return True

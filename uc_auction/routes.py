@@ -18,11 +18,11 @@ def token_required(f):
             return make_response(jsonify({'message' : 'Token is missing!'}), 401)
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-            username = data['id']
+            user_id = data['id']
             
         except Exception:
             return make_response(jsonify({'message': 'Token is invalid'}), 401)
-        return f(username, *args, **kwargs)
+        return f(user_id, *args, **kwargs)
 
     return decorated
 
@@ -56,29 +56,33 @@ def register():
     result = db.register_user(data) 
     if result == True:
         return make_response(jsonify({"message":"User Created!"}), 200)
-    return make_response(jsonify(result), 400)
+    return make_response(jsonify(result), 401)
 
-#Debug Method
+
 @app.route("/users", methods=['GET'])
 def get_users():
     """Return JSON object with array with all users detailed information"""
     users = db.get_table("person")
     return jsonify({"users": users})
 
-#To-Do Criar Eleição
 @app.route("/auction", methods=['POST'])
 @schema.validate(schemas.auctionSchema)
-def create_auction():
+@token_required
+def create_auction(user_id):
     data = request.get_json()
     try:
-        start = datetime.strptime(data['start_time'], '%Y-%m-%d %H:%M:%S.%f')
-        print(f"start_time: {start}")
-        end = datetime.strptime(data['end_time'], '%Y-%m-%d %H:%M:%S.%f')
-        print(f"end_time: {end}")
+        data['start_time'] = datetime.strptime(data['start_time'], '%Y-%m-%d %H:%M:%S.%f')
+        data['end_time'] = datetime.strptime(data['end_time'], '%Y-%m-%d %H:%M:%S.%f')
     except ValueError as e:
-        print(e)
+        return make_response(jsonify({"error": str(e)}), 401)
+    
+    data['person_id'] = user_id
+    result = db.create_election(data)
 
-    return jsonify(data)
+    if result == True:
+        return make_response(jsonify({"message":"Auction Created!"}), 200)
+    return make_response(jsonify(result), 401)
+
 
 #To-Do Pesquisar um leilão dado um id
 @app.route("/auction/<auction_id>", methods=['GET'])
@@ -96,10 +100,12 @@ def comment():
     data = request.get_json()
     return jsonify(data)
 
-#To-Do Retornar todas as eleições
 @app.route("/auctions", methods=['GET'])
-def get_all_auctions():
-    return jsonify({'auctions':['All Auctions']})
+@token_required
+def get_all_auctions(user_id):
+    """Return JSON object with array with all auctions detailed information"""
+    auctions = db.get_table("auction")
+    return jsonify({"auctions": auctions})
 
 #To-Do Retornar uma eleição com base numa keyword
 @app.route("/auctions/<keyword>", methods=['GET'])

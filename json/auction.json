@@ -1,7 +1,9 @@
 {
-    "title" : "auction",
-    "description" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus eu ligula viverra, pellentesque sem non, tristique sapien. Aenean varius et ex eu vehicula.",
-    "minimum_price" : 100,
-    "start_time" : "2021-05-29 10:11:58.743155",
-    "end_time" : "2021-05-29 10:11:58.743155"
+    "title": "auction",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus eu ligula viverra, pellentesque sem non, tristique sapien. Aenean varius et ex eu vehicula.",
+    "minimum_price": 100,
+    "start_time": "2021-05-29 10:11:58.743155",
+    "end_time": "2021-05-29 10:11:58.743155",
+    "product_id": "9781234567897",
+    "product_description": "Livro Mongo"
 }
