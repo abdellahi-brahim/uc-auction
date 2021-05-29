@@ -4,7 +4,9 @@ from flask_httpauth import HTTPBasicAuth
 from uc_auction.database import Database
 from flask_json_schema import JsonSchema
 
+#To-Do set env variables
 app = Flask(__name__)
+app.config['SECRET_KEY'] = "secret_key"
 
 user = "fxizouxlthwjpl"
 password = "fb9f0750ac21dcae788d6ed36f9125b37cb4aa0ebbe6d07b47f1009af9d1c2d3"

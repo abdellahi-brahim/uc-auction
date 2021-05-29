@@ -1,10 +1,30 @@
+from functools import wraps
+from flask.helpers import make_response
 from uc_auction import app, schema, db
 from uc_auction import schemas
 from flask import request, jsonify
 from flask_json_schema import JsonValidationError
-from datetime import datetime
+from datetime import datetime, timedelta
 
-import re
+import jwt
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        if 'access-token' in request.headers:
+            token = request.headers['access-token']
+        if not token:
+            return make_response(jsonify({'message' : 'Token is missing!'}), 401)
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+            username = data['id']
+            
+        except Exception:
+            return make_response(jsonify({'message': 'Token is invalid'}), 401)
+        return f(username, *args, **kwargs)
+
+    return decorated
 
 @app.errorhandler(JsonValidationError)
 def validation_error(e):
@@ -20,15 +40,27 @@ def home():
 @schema.validate(schemas.loginSchema)
 def login():
     data = request.get_json()
-    return jsonify(data)
+    result = db.login(data)
+    if result == False:
+        return make_response(jsonify({"message":'Could not verify'}), 401, {'WWW-Authenticate' : 'Basic realm="Login Required!"'})
 
-#To-Do Registar Utilizador
+    print(result)
+
+    expire = datetime.utcnow() + timedelta(minutes=30)
+    token = jwt.encode({'id':result, 'exp': expire}, app.config['SECRET_KEY'], algorithm="HS256")
+    return jsonify({'token': token})
+
 @app.route("/user", methods=['POST'])
 @schema.validate(schemas.userSchema)
 def register():
+    "Receives a JSON object and creates user in database"
     data = request.get_json()
-    return jsonify(data)
+    result = db.register_user(data) 
+    if result == True:
+        return make_response(jsonify({"message":"User Created!"}), 200)
+    return make_response(jsonify(result), 400)
 
+#Debug Method
 @app.route("/users", methods=['GET'])
 def get_users():
     """Return JSON object with array with all users detailed information"""
