@@ -1,4 +1,4 @@
-from uc_auction import app, schema
+from uc_auction import app, schema, db
 from uc_auction import schemas
 from flask import request, jsonify
 from flask_json_schema import JsonValidationError
@@ -29,6 +29,12 @@ def register():
     data = request.get_json()
     return jsonify(data)
 
+@app.route("/users", methods=['GET'])
+def get_users():
+    """Return JSON object with array with all users detailed information"""
+    users = db.get_table("person")
+    return jsonify({"users": users})
+
 #To-Do Criar Eleição
 @app.route("/auction", methods=['POST'])
 @schema.validate(schemas.auctionSchema)
@@ -44,10 +50,21 @@ def create_auction():
 
     return jsonify(data)
 
-#To-Do Pesquisar uma eleição dado um id
-@app.route("/auction/<id>", methods=['GET'])
-def get_auction(id):
-    return jsonify({"auction_id": id})
+#To-Do Pesquisar um leilão dado um id
+@app.route("/auction/<auction_id>", methods=['GET'])
+def get_auction(auction_id):
+    return jsonify({"auction_id": auction_id})
+
+#To-Do Editar propriedades dum leilão
+@app.route("/auction/<auction_id>", methods = ['POST'])
+def edit_auction(auction_id):
+    return jsonify({"auction_id": auction_id})
+
+#To-Do Mural Comments
+@app.route("/auction/comment", methods=['PUT'])
+def comment():
+    data = request.get_json()
+    return jsonify(data)
 
 #To-Do Retornar todas as eleições
 @app.route("/auctions", methods=['GET'])
@@ -58,3 +75,15 @@ def get_all_auctions():
 @app.route("/auctions/<keyword>", methods=['GET'])
 def get_auctions(keyword):
     return jsonify({'keyword':keyword})
+
+#To-Do Criar uma licitação num leilão
+@app.route("/bid/<auction_id>/<bid>", methods=['PUT'])
+def bid(auction_id, bid):
+    return jsonify({'auction_id': auction_id, 'bid': bid})
+
+#To-Do Endpoint with all notifications
+@app.route("/user/notifications", methods=['GET'])
+def notifications():
+    return jsonify({"Notifications" :['All notifications']})
+
+
