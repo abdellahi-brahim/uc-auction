@@ -35,16 +35,14 @@ def validation_error(e):
 def home():
     return "Welcome to uc-auction api"
 
-#To-Do Login
 @app.route("/user", methods=['PUT'])
 @schema.validate(schemas.loginSchema)
 def login():
+    "Returns jwt token with 30 minutes validity if credentials are correct"
     data = request.get_json()
     result = db.login(data)
-    if result == False:
-        return make_response(jsonify({"message":'Could not verify'}), 401, {'WWW-Authenticate' : 'Basic realm="Login Required!"'})
-
-    print(result)
+    if isinstance(result, str):
+        return make_response(jsonify({"message":result}), 401, {'WWW-Authenticate' : 'Basic realm="Login Required!"'})
 
     expire = datetime.utcnow() + timedelta(minutes=30)
     token = jwt.encode({'id':result, 'exp': expire}, app.config['SECRET_KEY'], algorithm="HS256")

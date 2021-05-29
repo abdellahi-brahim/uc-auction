@@ -53,16 +53,16 @@ class Database():
             cursor.execute(query)
             #No username found or wrong password
             if cursor.rowcount < 1:
-                return False
+                return "Username Not Found"
 
             user_id, hashed_password = cursor.fetchone()
             
             if hashed_password != data['password']:
                 print(f"{hashed_password} == {data['password']}")
-                return False
+                return "Wrong Password"
 
-            return user_id
-            
+            return int(user_id)
+
     @connect
     def register_user(self, connection, data):
         with connection.cursor() as cursor:
