@@ -26,6 +26,28 @@ class Query():
         return f"select * from auction where end_time::date>'{cur_date}'"
 
     @staticmethod
+    def get_user_auction(user_id, auction_id):
+        return f"select * from auction where id = {auction_id} and person_id = {user_id}"
+
+    @staticmethod
+    def update_version(auction_id):
+        return f"insert into version(title, description, edited, auction_id)\
+            select a.title, a.description, current_timestamp, a.id\
+            from auction a where a.id = {auction_id}"
+
+    @staticmethod
+    def update_auction(user_id, auction_id, data):
+        query = "update auction set "
+        
+        for key in data:
+            if isinstance(data[key], str):
+                query += f"{key} = '{data[key]}',"
+            else:
+                query += f"{key} = {data[key]},"
+
+        return f"{query[:-1]} where id = {auction_id} and person_id = {user_id}"
+
+    @staticmethod
     def auction(auction_id):
         return f"select * from auction where id = {auction_id}"
 
@@ -39,14 +61,13 @@ class Database():
 
     def connect(func):
         def inner(self, *args, **kwargs):
-            connection = psycopg2.connect(user=self.user,password=self.password,host=self.host,port=self.port, database=self.db)
-            try:
-                result = func(self, connection, *args, **kwargs)
-            except Exception as e:
-                result = {"error": str(e)}
-                connection.rollback()
-            connection.close()
-            return result
+            with psycopg2.connect(user=self.user,password=self.password,host=self.host,port=self.port, database=self.db) as connection:
+                try:
+                    result = func(self, connection, *args, **kwargs)
+                except Exception as e:
+                    result = {"error": str(e)}
+                    connection.rollback()
+                return result
         return inner
 
     @connect 
@@ -107,3 +128,24 @@ class Database():
                 return {"message": "No auction found!"}
             return dict(zip([column[0] for column in cursor.description], cursor.fetchone()))
     
+    @connect 
+    def edit_auction(self, connection, user_id, auction_id, data):
+        #Verify if auction's author is user_id
+        with connection.cursor() as cursor:
+            query = Query.get_user_auction(user_id, auction_id)
+            cursor.execute(query)
+            if cursor.rowcount < 1:
+                return {"message": "access forbiden"}
+        
+        with connection.cursor() as cursor:
+            #Insert Previous Info in Version Table
+            version_query = Query.update_version(auction_id)
+            #Update Table values query
+            auction_query = Query.update_auction(user_id, auction_id, data)
+            #Make transation
+            cursor.execute(version_query)
+            cursor.execute(auction_query)
+            #Commit transation
+            connection.commit()
+            return {"message": "auction updated successfully"}
+

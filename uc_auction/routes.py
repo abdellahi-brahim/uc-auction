@@ -90,13 +90,17 @@ def create_auction(user_id):
 @app.route("/auction/<auction_id>", methods=['GET'])
 @token_required
 def get_auction(_, auction_id):
+    """Returns the auction details which id corresponds to auction_id"""
     result = db.get_auction_by_id(auction_id)
     return jsonify(result)
 
-#To-Do Editar propriedades dum leilão
+#To-Do Verify json input
 @app.route("/auction/<auction_id>", methods = ['POST'])
-def edit_auction(auction_id):
-    return jsonify({"auction_id": auction_id})
+@token_required
+def edit_auction(user_id, auction_id):
+    data = request.get_json()
+    result = db.edit_auction(user_id, auction_id, data)
+    return jsonify(result)
 
 #To-Do Mural Comments
 @app.route("/auction/comment", methods=['PUT'])
