@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 import jwt
 
 def token_required(f):
+    """Wrapper that ensures that request has a valid token in header. Returns user_id"""
     @wraps(f)
     def decorated(*args, **kwargs):
         token = None
@@ -28,6 +29,7 @@ def token_required(f):
 
 @app.errorhandler(JsonValidationError)
 def validation_error(e):
+    """Validates JSON data, check if all required fields are present and if they are in correct format"""
     return jsonify({ 'error': e.message, 'errors': [validation_error.message for validation_error  in e.errors]})
 
 #Home page
@@ -38,7 +40,7 @@ def home():
 @app.route("/user", methods=['PUT'])
 @schema.validate(schemas.loginSchema)
 def login():
-    "Returns jwt token with 30 minutes validity if credentials are correct"
+    """Returns jwt token with 30 minutes validity if credentials are correct"""
     data = request.get_json()
     result = db.login(data)
     if isinstance(result, str):
@@ -51,7 +53,7 @@ def login():
 @app.route("/user", methods=['POST'])
 @schema.validate(schemas.userSchema)
 def register():
-    "Receives a JSON object and creates user in database"
+    """Receives a JSON object with user data and creates user in database"""
     data = request.get_json()
     result = db.register_user(data) 
     if result == True:
@@ -69,6 +71,7 @@ def get_users():
 @schema.validate(schemas.auctionSchema)
 @token_required
 def create_auction(user_id):
+    """Receives a JSON object with auction data and creates auction in database"""
     data = request.get_json()
     try:
         data['start_time'] = datetime.strptime(data['start_time'], '%Y-%m-%d %H:%M:%S.%f')
@@ -81,13 +84,14 @@ def create_auction(user_id):
 
     if result == True:
         return make_response(jsonify({"message":"Auction Created!"}), 200)
+
     return make_response(jsonify(result), 401)
 
-
-#To-Do Pesquisar um leilão dado um id
 @app.route("/auction/<auction_id>", methods=['GET'])
-def get_auction(auction_id):
-    return jsonify({"auction_id": auction_id})
+@token_required
+def get_auction(_, auction_id):
+    result = db.get_auction_by_id(auction_id)
+    return jsonify(result)
 
 #To-Do Editar propriedades dum leilão
 @app.route("/auction/<auction_id>", methods = ['POST'])

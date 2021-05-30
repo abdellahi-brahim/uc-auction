@@ -13,17 +13,21 @@ class Query():
     @staticmethod
     def insert_user(username, password, first_name, last_name, phone, street, city, zipcode):
         return f"insert into person(username, password, first_name, last_name, phone, street, city, zipcode)\
-            values('{username}', '{password}', '{first_name}', '{last_name}', '{phone}', '{street}', '{city}', '{zipcode}')"
+            values('{username}', '{password}', '{first_name}', '{last_name}', {phone}, '{street}', '{city}', '{zipcode}')"
 
     @staticmethod
     def insert_auction(title, description, minimum_price, start_time, end_time, product_id, product_description, person_id):
-        return f"insert into auction(title, description, minimum_price, start_time, end_time, product_id, product_description, person_id)\
-            values('{title}', '{description}', '{minimum_price}', '{start_time}', '{end_time}', '{product_id}', '{product_description}', '{person_id}')"
+        return f"insert into auction(title, description, minimum_price, start_time, end_time, product_isbn, product_description, person_id)\
+            values('{title}', '{description}', {minimum_price}, '{start_time}', '{end_time}', {product_id}, '{product_description}', '{person_id}')"
 
     @staticmethod
     def on_going_auctions():
         cur_date = datetime.now(timezone.utc)
         return f"select * from auction where end_time::date>'{cur_date}'"
+
+    @staticmethod
+    def auction(auction_id):
+        return f"select * from auction where id = {auction_id}"
 
 class Database():
     def __init__(self, user, password, host, db, port):
@@ -94,5 +98,12 @@ class Database():
             return {"On Going Auctions": [dict(zip([column[0] for column in cursor.description], row))
              for row in cursor.fetchall()]}
 
-
+    @connect
+    def get_auction_by_id(self, connection, auction_id):
+        with connection.cursor() as cursor:
+            query = Query.auction(auction_id)
+            cursor.execute(query)
+            if cursor.rowcount < 1:
+                return {"message": "No auction found!"}
+            return dict(zip([column[0] for column in cursor.description], cursor.fetchone()))
     
