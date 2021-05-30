@@ -51,6 +51,10 @@ class Query():
     def auction(auction_id):
         return f"select * from auction where id = {auction_id}"
 
+    def insert_comment(auction_id, user_id, content):
+        return f"insert into comment(person_id, auction_id, content, comment_date)\
+            values({user_id}, {user_id}, '{content}', current_timestamp)"
+
 class Database():
     def __init__(self, user, password, host, db, port):
         self.user = user
@@ -72,8 +76,8 @@ class Database():
 
     @connect 
     def login(self, connection, data):
+        query = Query.hashed_password(data['username'])
         with connection.cursor() as cursor:
-            query = Query.hashed_password(data['username'])
             cursor.execute(query)
             #No username found or wrong password
             if cursor.rowcount < 1:
@@ -89,40 +93,40 @@ class Database():
 
     @connect
     def register_user(self, connection, data):
+        query = Query.insert_user(data['username'],data['password'],data['first_name'],data['last_name'],data['phone'],data['street'],data['city'],data['zipcode'])  
         with connection.cursor() as cursor:
-            query = Query.insert_user(data['username'],data['password'],data['first_name'],data['last_name'],data['phone'],data['street'],data['city'],data['zipcode'])
             cursor.execute(query)
             connection.commit()
             return True
 
     @connect
     def create_election(self, connection, data):
+        query = Query.insert_auction(data['title'], data['description'], data['minimum_price'], data['start_time'], data['end_time'], data['product_id'], data['product_description'], data['person_id'])
         with connection.cursor() as cursor:
-            query = Query.insert_auction(data['title'], data['description'], data['minimum_price'], data['start_time'], data['end_time'], data['product_id'], data['product_description'], data['person_id'])
             cursor.execute(query)
             connection.commit()
             return True
 
     @connect 
     def get_table(self, connection, table):
+        query = Query.select_all(table)
         with connection.cursor() as cursor:
-            query = Query.select_all(table)
             cursor.execute(query)
             return [dict(zip([column[0] for column in cursor.description], row))
              for row in cursor.fetchall()]
 
     @connect 
     def get_on_going_auctions(self, connection):
+        query = Query.on_going_auctions()
         with connection.cursor() as cursor:
-            query = Query.on_going_auctions()
             cursor.execute(query)
             return {"On Going Auctions": [dict(zip([column[0] for column in cursor.description], row))
              for row in cursor.fetchall()]}
 
     @connect
     def get_auction_by_id(self, connection, auction_id):
+        query = Query.auction(auction_id)
         with connection.cursor() as cursor:
-            query = Query.auction(auction_id)
             cursor.execute(query)
             if cursor.rowcount < 1:
                 return {"message": "No auction found!"}
@@ -131,21 +135,31 @@ class Database():
     @connect 
     def edit_auction(self, connection, user_id, auction_id, data):
         #Verify if auction's author is user_id
+        query = Query.get_user_auction(user_id, auction_id)
         with connection.cursor() as cursor:
-            query = Query.get_user_auction(user_id, auction_id)
             cursor.execute(query)
             if cursor.rowcount < 1:
                 return {"message": "access forbiden"}
         
+        #Insert Previous Info in Version Table
+        version_query = Query.update_version(auction_id)
+        #Update Table values query
+        auction_query = Query.update_auction(user_id, auction_id, data)
         with connection.cursor() as cursor:
-            #Insert Previous Info in Version Table
-            version_query = Query.update_version(auction_id)
-            #Update Table values query
-            auction_query = Query.update_auction(user_id, auction_id, data)
-            #Make transation
             cursor.execute(version_query)
             cursor.execute(auction_query)
             #Commit transation
             connection.commit()
-            return {"message": "auction updated successfully"}
 
+        return {"message": "auction updated successfully"}
+
+    @connect 
+    def post_comment(self, connection, user_id, data):
+        query = Query.insert_comment(data['auction_id'], user_id, data['content'])
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            connection.commit()
+
+        return{"message": "comment posted successfully"}
+
+    

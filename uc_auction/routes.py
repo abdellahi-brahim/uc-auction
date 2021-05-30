@@ -102,11 +102,13 @@ def edit_auction(user_id, auction_id):
     result = db.edit_auction(user_id, auction_id, data)
     return jsonify(result)
 
-#To-Do Mural Comments
+#To-Do Notify all users about auction
 @app.route("/auction/comment", methods=['PUT'])
-def comment():
+@token_required
+def comment(user_id):
     data = request.get_json()
-    return jsonify(data)
+    result = db.post_comment(user_id, data)
+    return jsonify(result)
 
 @app.route("/auctions", methods=['GET'])
 @token_required
