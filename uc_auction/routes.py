@@ -116,9 +116,9 @@ def get_all_auctions(_):
     auctions = db.get_table("auction")
     return jsonify({"auctions": auctions})
 
-#To-Do Retornar uma eleição com base numa keyword
 @app.route("/auctions/<keyword>", methods=['GET'])
-def get_auctions(keyword):
+@token_required
+def get_auctions(_, keyword):
     result = db.get_auction_by_keyword(keyword)
     return jsonify(result)
 
