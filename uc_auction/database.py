@@ -155,3 +155,11 @@ class Database():
                 return {"message": "no auction selected"}
 
             return {"next": cursor.fetchone()[0]}
+
+    @connect 
+    def end_auctions(self, connection):
+        query = Query.end_auctions()
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+        
+        return {"success": "auctions ended"} 

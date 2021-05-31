@@ -76,3 +76,16 @@ class Query():
     @staticmethod
     def next_auction():
         return f"select min(end_time) from auction where winner_id is null"
+
+    @staticmethod
+    def end_auctions():
+        return f"update auction a\
+                set winner_id = (select a.id\
+                from bid b\
+                where a.id = b.auction_id\
+                group by a.id)\
+                where winner_id is null and end_time < current_timestamp"
+
+    @staticmethod
+    def schedule_end():
+        f"select cron.schedule"
