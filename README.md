@@ -73,25 +73,13 @@ Host: https://uc-auction.herokuapp.com/
 Content-Length: 66
 
 {
-
-"username" : "abdellahi",
-
-"phone" : 913078866,
-
-"city" : "Coimbra",
-
-"street" : "Rua Cidade Dili, Bloco 13, 1º Direito",
-
-"zipcode": "3020-208",
-
-"password" : "1a2b3c4d",
-
-"first_name" : "Abdellahi",
-
-"last_name" : "Brahim",
-
-"email" : "uchihaabdellahi@gmail.com"
-
+    "title": "auction",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus eu ligula viverra, pellentesque sem non, tristique sapien. Aenean varius et ex eu vehicula.",
+    "minimum_price": 100,
+    "start_time": "2021-05-29 10:11:58.743155",
+    "end_time": "2021-05-29 10:11:58.743155",
+    "product_id": "9781234567897",
+    "product_description": "Livro Mongo"
 }
 ```
 ### Pesquisar eleição por id
