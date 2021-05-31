@@ -129,7 +129,6 @@ def bid(user_id, auction_id, increase):
     result = db.add_bid(user_id, auction_id, increase)
     return jsonify(result)
 
-#To-Do Mark Notification as seen
 @app.route("/user/notifications", methods=['GET'])
 @token_required
 def notifications(user_id):

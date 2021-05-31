@@ -131,10 +131,18 @@ class Database():
 
     @connect
     def get_notifications(self, connection, user_id):
-        query = Query.notifications(user_id)
+        notif_query = Query.notifications(user_id)
+        update_query = Query.read_notifications(user_id)
+
         with connection.cursor() as cursor:
-            cursor.execute(query)
-            
-            return {"Notifications": [dict(zip([column[0] for column in cursor.description], row))
+            cursor.execute(notif_query)
+
+            notif = {"Notifications": [dict(zip([column[0] for column in cursor.description], row))
                 for row in cursor.fetchall()]}
+
+            cursor.execute(update_query)
+            connection.commit()
+        
+        return notif
+
 

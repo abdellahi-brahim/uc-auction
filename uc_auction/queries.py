@@ -66,8 +66,8 @@ class Query():
             end;"
 
     @staticmethod
-    def update_notif():
-        return "bla bla"
+    def read_notifications(person_id):
+        return f"update notification set seen = TRUE where person_id = {person_id} and seen = FALSE"
 
     @staticmethod
     def notifications(person_id):
