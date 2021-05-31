@@ -72,3 +72,7 @@ class Query():
     @staticmethod
     def notifications(person_id):
         return f"select * from notification where person_id = {person_id}"
+
+    @staticmethod
+    def next_auction():
+        return f"select min(end_time) from auction where winner_id is null"

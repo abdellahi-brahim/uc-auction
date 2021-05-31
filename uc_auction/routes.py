@@ -2,7 +2,7 @@ from functools import wraps
 from flask.helpers import make_response
 from uc_auction import app, schema, db
 from uc_auction import schemas
-from flask import request, jsonify
+from flask import json, request, jsonify
 from flask_json_schema import JsonValidationError
 from datetime import datetime, timedelta
 
@@ -135,9 +135,13 @@ def notifications(user_id):
     result = db.get_notifications(user_id)
     return jsonify(result)
 
-#To-Do Endpoint que retorna a próxima eleição a finalizar
-
+@app.route("/auctions/next", methods=['GET'])
+def next_auction():
+    result = db.get_next_auction()
+    return jsonify(result)
 
 #To-Do Endpoint para finalizar os leilões na data exata
-
+@app.route("/auctions/end", methods = ['POST'])
+def end_auctions():
+    return ""
 

@@ -145,4 +145,13 @@ class Database():
         
         return notif
 
+    @connect 
+    def get_next_auction(self, connection):
+        query = Query.next_auction()
+        with connection.cursor() as cursor:
+            cursor.execute(query)
 
+            if cursor.rowcount < 1:
+                return {"message": "no auction selected"}
+
+            return {"next": cursor.fetchone()[0]}
