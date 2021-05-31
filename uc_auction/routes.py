@@ -140,7 +140,6 @@ def next_auction():
     result = db.get_next_auction()
     return jsonify(result)
 
-#To-Do Endpoint para finalizar os leilões na data exata
 @app.route("/auctions/end", methods = ['POST'])
 def end_auctions():
     result = db.end_auctions()
