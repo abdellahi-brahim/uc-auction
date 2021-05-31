@@ -122,6 +122,11 @@ def get_auctions(_, keyword):
     result = db.get_auction_by_keyword(keyword)
     return jsonify(result)
 
+@app.route("/auctions/current", methods = ['GET'])
+@token_required
+def get_on_going(_):
+    return jsonify({})
+
 #To-Do Mensagem de sucesso ou de falha
 @app.route("/bid/<auction_id>/<increase>", methods=['PUT'])
 @token_required
