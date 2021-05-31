@@ -48,7 +48,7 @@ def login():
 
     expire = datetime.utcnow() + timedelta(minutes=30)
     token = jwt.encode({'id':result, 'exp': expire}, app.config['SECRET_KEY'], algorithm="HS256")
-    return jsonify({'token': token})
+    return jsonify({'token': token, 'validity': expire})
 
 @app.route("/user", methods=['POST'])
 @schema.validate(schemas.userSchema)
@@ -122,15 +122,19 @@ def get_auctions(_, keyword):
     result = db.get_auction_by_keyword(keyword)
     return jsonify(result)
 
-#To-Do Criar uma licitação num leilão
-@app.route("/bid/<auction_id>/<bid>", methods=['PUT'])
-def bid(auction_id, bid):
-    return jsonify({'auction_id': auction_id, 'bid': bid})
+#To-Do Mensagem de sucesso ou de falha
+@app.route("/bid/<auction_id>/<increase>", methods=['PUT'])
+@token_required
+def bid(user_id, auction_id, increase):
+    result = db.add_bid(user_id, auction_id, increase)
+    return jsonify(result)
 
-#To-Do Endpoint with all notifications
+#To-Do Mark Notification as seen
 @app.route("/user/notifications", methods=['GET'])
-def notifications():
-    return jsonify({"Notifications" :['All notifications']})
+@token_required
+def notifications(user_id):
+    result = db.get_notifications(user_id)
+    return jsonify(result)
 
 #To-Do Endpoint que retorna a próxima eleição a finalizar
 

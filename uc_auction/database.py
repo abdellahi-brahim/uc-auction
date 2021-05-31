@@ -1,64 +1,6 @@
-from datetime import datetime, timezone
+from uc_auction.queries import Query
+
 import psycopg2
-    
-class Query():
-    @staticmethod
-    def select_all(table):
-        return f"select * from {table}"
-
-    @staticmethod
-    def hashed_password(username):
-        return f"select id, password from person where username = '{username}'"
-
-    @staticmethod
-    def insert_user(username, password, first_name, last_name, phone, street, city, zipcode):
-        return f"insert into person(username, password, first_name, last_name, phone, street, city, zipcode)\
-            values('{username}', '{password}', '{first_name}', '{last_name}', {phone}, '{street}', '{city}', '{zipcode}')"
-
-    @staticmethod
-    def insert_auction(title, description, minimum_price, start_time, end_time, product_id, product_description, person_id):
-        return f"insert into auction(title, description, minimum_price, start_time, end_time, product_isbn, product_description, person_id)\
-            values('{title}', '{description}', {minimum_price}, '{start_time}', '{end_time}', {product_id}, '{product_description}', '{person_id}')"
-
-    @staticmethod
-    def on_going_auctions():
-        cur_date = datetime.now(timezone.utc)
-        return f"select * from auction where end_time::date>'{cur_date}'"
-
-    @staticmethod
-    def get_user_auction(user_id, auction_id):
-        return f"select * from auction where id = {auction_id} and person_id = {user_id}"
-
-    @staticmethod
-    def update_version(auction_id):
-        return f"insert into version(title, description, edited, auction_id)\
-            select a.title, a.description, current_timestamp, a.id\
-            from auction a where a.id = {auction_id}"
-
-    @staticmethod
-    def update_auction(user_id, auction_id, data):
-        query = "update auction set "
-        
-        for key in data:
-            if isinstance(data[key], str):
-                query += f"{key} = '{data[key]}',"
-            else:
-                query += f"{key} = {data[key]},"
-
-        return f"{query[:-1]} where id = {auction_id} and person_id = {user_id}"
-
-    @staticmethod
-    def auction(auction_id):
-        return f"select * from auction where id = {auction_id}"
-
-    @staticmethod
-    def insert_comment(auction_id, user_id, content):
-        return f"insert into comment(person_id, auction_id, content, comment_date)\
-            values({user_id}, {auction_id}, '{content}', current_timestamp)"
-
-    @staticmethod
-    def auction_keyword(keyword):
-        return f"select * from auction a where a.title like '%{keyword}%' or a.description like '%{keyword}%' or a.product_description like '%{keyword}%'"
 
 class Database():
     def __init__(self, user, password, host, db, port):
@@ -179,4 +121,20 @@ class Database():
             return {"Auctions": [dict(zip([column[0] for column in cursor.description], row))
             for row in cursor.fetchall()]}
 
+    @connect
+    def add_bid(self, connection, user_id, auction_id, increase):
+        query = Query.add_bid(user_id, auction_id, increase)
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+
+        return {"message": "bid commited successfully"}
+
+    @connect
+    def get_notifications(self, connection, user_id):
+        query = Query.notifications(user_id)
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            
+            return {"Notifications": [dict(zip([column[0] for column in cursor.description], row))
+                for row in cursor.fetchall()]}
 
