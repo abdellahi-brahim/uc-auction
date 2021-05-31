@@ -80,10 +80,10 @@ class Query():
     @staticmethod
     def end_auctions():
         return f"update auction a\
-                set winner_id = (select a.id\
+                set winner_id = coalesce((select a.id\
                 from bid b\
                 where a.id = b.auction_id and b.increase =\
                 (select max(b2.increase) from bid b2 where a.id = b2.auction_id)\
-                group by a.id)\
+                group by a.id), 0)\
                 where winner_id is null and end_time < current_timestamp"
                 
