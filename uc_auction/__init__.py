@@ -5,15 +5,15 @@ from flask_json_schema import JsonSchema
 
 #To-Do set env variables
 app = Flask(__name__)
+
 app.config['SECRET_KEY'] = "secret_key"
+app.config['USER'] = "fxizouxlthwjpl"
+app.config['PASSWORD'] = "fb9f0750ac21dcae788d6ed36f9125b37cb4aa0ebbe6d07b47f1009af9d1c2d3"
+app.config['HOST'] = "ec2-34-254-69-72.eu-west-1.compute.amazonaws.com"
+app.config['DB'] = "d3uhmt1e2qo9g3"
+app.config['PORT'] = "5432"
 
-user = "fxizouxlthwjpl"
-password = "fb9f0750ac21dcae788d6ed36f9125b37cb4aa0ebbe6d07b47f1009af9d1c2d3"
-host = "ec2-34-254-69-72.eu-west-1.compute.amazonaws.com"
-db = "d3uhmt1e2qo9g3"
-port = "5432"
-
-db = Database(user, password, host, db, port)
+db = Database(app.config['USER'], app.config['PASSWORD'], app.config['HOST'], app.config['DB'], app.config['PORT'])
 schema = JsonSchema(app)
 
 from uc_auction import routes

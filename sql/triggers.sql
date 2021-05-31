@@ -26,12 +26,19 @@ CREATE OR REPLACE FUNCTION notify_users_auction()
     AS
 $$
 BEGIN
-    INSERT INTO notification(person_id, auction_id, seen, type, content, date_time)
-    SELECT DISTINCT person_id, NEW.id, FALSE, 'Fim de Leilão', NEW.winner_id, current_timestamp 
-    FROM bid WHERE auction_id = NEW.id;
+    IF NEW IS NOT NULL THEN
+        INSERT INTO notification(person_id, auction_id, seen, type, content, date_time)
+        SELECT DISTINCT person_id, NEW.id, FALSE, 'Fim de Leilão', NEW.winner_id, current_timestamp
+        FROM bid WHERE auction_id = NEW.id;
 
-    INSERT INTO notification(person_id, auction_id, seen, type, content, date_time)
-    values (NEW.person_id, NEW.id, FALSE, 'Fim de Leilão', NEW.winner_id, current_timestamp);
+        INSERT INTO notification(person_id, auction_id, seen, type, content, date_time)
+        values (NEW.person_id, NEW.id, FALSE, 'Fim de Leilão', NEW.winner_id, current_timestamp);
+    ELSE
+        INSERT INTO notification(person_id, auction_id, seen, type, content, date_time)
+        values (NEW.person_id, NEW.id, FALSE, 'Fim de Leilão', "No Bids", current_timestamp);
+    END IF;
+
+    RETURN NULL;
 END;
 
 $$;
