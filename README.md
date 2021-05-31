@@ -3,60 +3,6 @@
 
 Aplicação de leilões em Python3 com recurso a Flask e com uma base de dados postgres. A aplicação está alojada no heruko e poderá ser acessada neste link: https://uc-auction.herokuapp.com/
 
-## Schemas
-
-Existe dois schemas JSON definidos, o schema de retorno e o schema de envio. Única diferença entre os dois é que quando enviamos, não precisamos setar o parametro _id_.
-
-  
-
-### Schema de retorno
-
-```json
-
-{
-
-"username" : "abdellahi",
-
-"phone" : 913078866,
-
-"city" : "Coimbra",
-
-"street" : "Rua Cidade Dili, Bloco 13, 1º Direito",
-
-"zipcode": "3020-208",
-
-"password" : "1a2b3c4d",
-
-"first_name" : "Abdellahi",
-
-"last_name" : "Brahim",
-
-"email" : "uchihaabdellahi@gmail.com"
-
-}
-
-```
-
-  
-
-### Schema de envio
-
-```json
-
-{
-
-"name":"Chewbacca",
-
-"email":"chewie@wookie.sw",
-
-"active": 1
-
-}
-
-```
-
-  
-
 ## Rotas
 
 As rotas criadas estão expostas nos seguintes endereços:
@@ -241,3 +187,5 @@ GET /auctions/current
 
 Host: https://uc-auction.herokuapp.com/
 ```
+
+
