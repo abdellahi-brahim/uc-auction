@@ -19,7 +19,7 @@ class Query():
 
     @staticmethod
     def on_going_auctions():
-        return f"select * from auction where end_time::date>current_timestamp"
+        return f"select id, title, description from auction where end_time>current_timestamp"
 
     @staticmethod
     def get_user_auction(user_id, auction_id):
@@ -82,10 +82,8 @@ class Query():
         return f"update auction a\
                 set winner_id = (select a.id\
                 from bid b\
-                where a.id = b.auction_id\
+                where a.id = b.auction_id and b.increase =\
+                (select max(b2.increase) from bid b2 where a.id = b2.auction_id)\
                 group by a.id)\
                 where winner_id is null and end_time < current_timestamp"
-
-    @staticmethod
-    def schedule_end():
-        f"select cron.schedule"
+                

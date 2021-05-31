@@ -67,6 +67,10 @@ class Database():
         query = Query.on_going_auctions()
         with connection.cursor() as cursor:
             cursor.execute(query)
+            
+            if cursor.rowcount < 1:
+                return {"message": "No on going auction found!"}
+
             return {"On Going Auctions": [dict(zip([column[0] for column in cursor.description], row))
              for row in cursor.fetchall()]}
 

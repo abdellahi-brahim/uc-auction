@@ -237,7 +237,7 @@ Host: https://uc-auction.herokuapp.com/
 
 ### Listar todos os leilões em ocorrência
 ```http
-POST /auctions/end
+GET /auctions/current
 
 Host: https://uc-auction.herokuapp.com/
 ```

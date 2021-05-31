@@ -83,6 +83,7 @@ def create_auction(user_id):
     result = db.create_election(data)
 
     if result == True:
+        #call scheduler endpoint here
         return make_response(jsonify({"message":"Auction Created!"}), 200)
 
     return make_response(jsonify(result), 401)
@@ -94,7 +95,6 @@ def get_auction(_, auction_id):
     result = db.get_auction_by_id(auction_id)
     return jsonify(result)
 
-#To-Do Verify json input
 @app.route("/auction/<auction_id>", methods = ['POST'])
 @token_required
 def edit_auction(user_id, auction_id):
@@ -125,9 +125,9 @@ def get_auctions(_, keyword):
 @app.route("/auctions/current", methods = ['GET'])
 @token_required
 def get_on_going(_):
-    return jsonify({})
+    result = db.get_on_going_auctions()
+    return jsonify(result)
 
-#To-Do Mensagem de sucesso ou de falha
 @app.route("/bid/<auction_id>/<increase>", methods=['PUT'])
 @token_required
 def bid(user_id, auction_id, increase):
