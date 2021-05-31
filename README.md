@@ -1,7 +1,7 @@
 
 # uc-auction
 
-Aplicação de leilões em Python3 com recurso a Flask e com uma base de dados postgres. A aplicação está alojada no heruko e poderá ser acessada neste link: https://uc-auction.herokuapp.com/
+Aplicação de leilões em Python3 com recurso a Flask e com uma base de dados postgres. A aplicação está alojada no heroku e poderá ser acessada neste link: https://uc-auction.herokuapp.com/
 
 ## Rotas
 
