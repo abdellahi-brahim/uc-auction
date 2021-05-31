@@ -102,7 +102,6 @@ def edit_auction(user_id, auction_id):
     result = db.edit_auction(user_id, auction_id, data)
     return jsonify(result)
 
-#To-Do Notify all users about auction
 @app.route("/auction/comment", methods=['PUT'])
 @token_required
 def comment(user_id):
@@ -112,7 +111,7 @@ def comment(user_id):
 
 @app.route("/auctions", methods=['GET'])
 @token_required
-def get_all_auctions(user_id):
+def get_all_auctions(_):
     """Return JSON object with array with all auctions detailed information"""
     auctions = db.get_table("auction")
     return jsonify({"auctions": auctions})
@@ -120,7 +119,8 @@ def get_all_auctions(user_id):
 #To-Do Retornar uma eleição com base numa keyword
 @app.route("/auctions/<keyword>", methods=['GET'])
 def get_auctions(keyword):
-    return jsonify({'keyword':keyword})
+    result = db.get_auction_by_keyword(keyword)
+    return jsonify(result)
 
 #To-Do Criar uma licitação num leilão
 @app.route("/bid/<auction_id>/<bid>", methods=['PUT'])
@@ -131,5 +131,10 @@ def bid(auction_id, bid):
 @app.route("/user/notifications", methods=['GET'])
 def notifications():
     return jsonify({"Notifications" :['All notifications']})
+
+#To-Do Endpoint que retorna a próxima eleição a finalizar
+
+
+#To-Do Endpoint para finalizar os leilões na data exata
 
 

@@ -51,9 +51,14 @@ class Query():
     def auction(auction_id):
         return f"select * from auction where id = {auction_id}"
 
+    @staticmethod
     def insert_comment(auction_id, user_id, content):
         return f"insert into comment(person_id, auction_id, content, comment_date)\
-            values({user_id}, {user_id}, '{content}', current_timestamp)"
+            values({user_id}, {auction_id}, '{content}', current_timestamp)"
+
+    @staticmethod
+    def auction_keyword(keyword):
+        return f"select * from auction a where a.title like '%{keyword}%' or a.description like '%{keyword}%' or a.product_description like '%{keyword}%'"
 
 class Database():
     def __init__(self, user, password, host, db, port):
@@ -162,4 +167,16 @@ class Database():
 
         return{"message": "comment posted successfully"}
 
-    
+    @connect 
+    def get_auction_by_keyword(self, connection, keyword):
+        query = Query.auction_keyword(keyword)
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            
+            if cursor.rowcount < 1:
+                return {"message": "No auction found!"}
+            
+            return {"Auctions": [dict(zip([column[0] for column in cursor.description], row))
+            for row in cursor.fetchall()]}
+
+
