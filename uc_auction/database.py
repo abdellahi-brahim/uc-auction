@@ -103,7 +103,7 @@ class Database():
         
     @connect 
     def edit_auction(self, connection, user_id, auction_id, data):
-        #Verify if auction's author is user_id
+        #Verify if auction's author is use r_id
         query = Query.get_user_auction(user_id, auction_id)
         with connection.cursor() as cursor:
             cursor.execute(query)
