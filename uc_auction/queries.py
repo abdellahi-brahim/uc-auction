@@ -54,7 +54,7 @@ class Query():
 
     @staticmethod
     def auction_keyword(keyword):
-        return f"select * from auction a where a.title like '%{keyword}%' or a.description like '%{keyword}%' or a.product_description like '%{keyword}%'"
+        return f"select a.id, a.description from auction a where a.product_description like '%{keyword}%' or a.product_isbn = '{keyword}'"
 
     @staticmethod
     def bid(auction_id):
