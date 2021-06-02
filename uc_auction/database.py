@@ -151,6 +151,18 @@ class Database():
 
         return {"message": "bid commited successfully"}
 
+    @connect 
+    def get_user_auctions(self, connection, user_id):
+        query = Query.person_auction(user_id)
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+
+            if cursor.rowcount < 1:
+                return {"message": "No auction found!"}
+            
+            return {"Auctions": [dict(zip([column[0] for column in cursor.description], row))
+            for row in cursor.fetchall()]}
+
     @connect
     def get_notifications(self, connection, user_id):
         notif_query = Query.notifications(user_id)

@@ -60,6 +60,11 @@ class Query():
     def bid(auction_id):
         return f"select p.username, b.increase from bid b, person p where b.person_id = p.id and b.auction_id = {auction_id}"
 
+    
+    @staticmethod
+    def person_auction(person_id):
+        f"select distinct concat(b.auction_id, a.id) from bid b, auction a where b.person_id = {person_id} and a.person_id = {person_id}"
+
     @staticmethod
     def comment(auction_id):
         return f"select p.username, c.content from comment c, person p where c.person_id = p.id and c.auction_id = {auction_id}"

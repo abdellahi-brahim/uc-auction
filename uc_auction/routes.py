@@ -131,6 +131,12 @@ def get_on_going(_):
     result = db.get_on_going_auctions()
     return jsonify(result)
 
+@app.route("/user/auctions", methods = ['GET'])
+@token_required
+def get_user_auction(user_id):
+    result = db.get_user_auctions(user_id)
+    return jsonify(result)
+
 @app.route("/bid/<auction_id>/<increase>", methods=['PUT'])
 @token_required
 def bid(user_id, auction_id, increase):
