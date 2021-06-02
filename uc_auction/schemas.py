@@ -15,12 +15,11 @@ userSchema = {
 }
 auctionSchema = {
     'type': 'object',
-    'required':['title', 'description', 'minimum_price', 'start_time', 'end_time'],
+    'required':['title', 'description', 'minimum_price', 'end_time'],
     'proprieties': {
         'title': { 'type': 'string'},
         'description': { 'type': 'string'},
         'minimum_price': { 'type': 'number'},
-        'start_time': { 'type': 'string'},
         'end_time': { 'type': 'string'}
     }
 }
