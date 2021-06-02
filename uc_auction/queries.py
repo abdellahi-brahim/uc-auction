@@ -57,6 +57,14 @@ class Query():
         return f"select * from auction a where a.title like '%{keyword}%' or a.description like '%{keyword}%' or a.product_description like '%{keyword}%'"
 
     @staticmethod
+    def bid(auction_id):
+        return f"select p.username b.increase from bid b, person p where b.person_id = p.id and b.auction_id = {auction_id}"
+
+    @staticmethod
+    def comment(auction_id):
+        return f"select p.username c.content from comment c, person p where c.person_id = p.id and c.auction_id = {auction_id}"
+
+    @staticmethod
     def add_bid(person_id, auction_id, increase):
         return f"begin; lock table bid in access exclusive mode;\
             insert into bid(auction_id, person_id, increase, bid_date)\

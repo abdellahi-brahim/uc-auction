@@ -81,8 +81,26 @@ class Database():
             cursor.execute(query)
             if cursor.rowcount < 1:
                 return {"message": "No auction found!"}
-            return dict(zip([column[0] for column in cursor.description], cursor.fetchone()))
-    
+            data = dict(zip([column[0] for column in cursor.description], cursor.fetchone()))
+
+        query = Query.bid(auction_id)
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            if cursor.rowcount < 1:
+                data['bids'] = "No Bids"
+            else:
+                data['bids'] = dict(zip([column[0] for column in cursor.description], cursor.fetchone()))
+
+        query = Query.comment(auction_id)
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            if cursor.rowcount < 1:
+                data['comments'] = "No Comments"
+            else:
+                data['comments'] = dict(zip([column[0] for column in cursor.description], cursor.fetchone()))
+
+        return data
+        
     @connect 
     def edit_auction(self, connection, user_id, auction_id, data):
         #Verify if auction's author is user_id
