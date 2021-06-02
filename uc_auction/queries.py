@@ -63,7 +63,7 @@ class Query():
     
     @staticmethod
     def person_auction(person_id):
-        f"select distinct concat(b.auction_id, a.id) from bid b, auction a where b.person_id = {person_id} and a.person_id = {person_id}"
+        return f"select distinct concat(b.auction_id, a.id) from bid b, auction a where b.person_id = {person_id} and a.person_id = {person_id}"
 
     @staticmethod
     def comment(auction_id):
