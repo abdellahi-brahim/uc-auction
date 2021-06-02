@@ -85,7 +85,7 @@ def create_auction(user_id):
 
     if result == True:
         #Calling Scheduler Endpoint
-        requests.post(app.config.get('SCHEDULER'), {"time":data['end_time']})
+        requests.post(app.config.get('SCHEDULER'), data = {"time":data['end_time']})
 
         return make_response(jsonify({"message":"Auction Created!"}), 200)
 
