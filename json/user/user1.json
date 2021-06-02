@@ -1,0 +1,11 @@
+{
+    "username" : "user1",
+    "phone" : 913078866,
+    "city" : "Coimbra",
+    "street" : "Rua Aleatória de Coimbra",
+    "zipcode": "3020-208",
+    "password" : "password",
+    "first_name" : "Utilizador",
+    "last_name" : "Um",
+    "email" : "user1@uc-auction.com"
+}

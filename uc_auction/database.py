@@ -48,7 +48,7 @@ class Database():
 
     @connect
     def create_election(self, connection, data):
-        query = Query.insert_auction(data['title'], data['description'], data['minimum_price'], data['start_time'], data['end_time'], data['product_id'], data['product_description'], data['person_id'])
+        query = Query.insert_auction(data['title'], data['description'], data['minimum_price'], data['end_time'], data['product_id'], data['product_description'], data['person_id'])
         with connection.cursor() as cursor:
             cursor.execute(query)
             connection.commit()

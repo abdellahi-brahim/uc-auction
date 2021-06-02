@@ -13,9 +13,9 @@ class Query():
             values('{username}', '{password}', '{first_name}', '{last_name}', {phone}, '{street}', '{city}', '{zipcode}')"
 
     @staticmethod
-    def insert_auction(title, description, minimum_price, start_time, end_time, product_id, product_description, person_id):
+    def insert_auction(title, description, minimum_price, end_time, product_id, product_description, person_id):
         return f"insert into auction(title, description, minimum_price, start_time, end_time, product_isbn, product_description, person_id)\
-            values('{title}', '{description}', {minimum_price}, '{start_time}', '{end_time}', {product_id}, '{product_description}', '{person_id}')"
+            values('{title}', '{description}', {minimum_price}, current_timestamp, '{end_time}', {product_id}, '{product_description}', '{person_id}')"
 
     @staticmethod
     def on_going_auctions():

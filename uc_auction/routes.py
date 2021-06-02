@@ -2,9 +2,11 @@ from functools import wraps
 from flask.helpers import make_response
 from uc_auction import app, schema, db
 from uc_auction import schemas
-from flask import json, request, jsonify
+from flask import request, jsonify
 from flask_json_schema import JsonValidationError
 from datetime import datetime, timedelta
+from dateutil import parser as date_parser
+import requests
 
 import jwt
 
@@ -74,8 +76,7 @@ def create_auction(user_id):
     """Receives a JSON object with auction data and creates auction in database"""
     data = request.get_json()
     try:
-        data['start_time'] = datetime.strptime(data['start_time'], '%Y-%m-%d %H:%M:%S.%f')
-        data['end_time'] = datetime.strptime(data['end_time'], '%Y-%m-%d %H:%M:%S.%f')
+        data['end_time'] = date_parser.parse(data['end_time'])
     except ValueError as e:
         return make_response(jsonify({"error": str(e)}), 401)
     
@@ -83,7 +84,9 @@ def create_auction(user_id):
     result = db.create_election(data)
 
     if result == True:
-        #call scheduler endpoint here
+        #Calling Scheduler Endpoint
+        requests.post(app.config.get('SCHEDULER'), jsonify({"time":data['end_time']}))
+
         return make_response(jsonify({"message":"Auction Created!"}), 200)
 
     return make_response(jsonify(result), 401)
