@@ -21,23 +21,23 @@ Content-Length: 66
 
 {
 
-"username" : "abdellahi",
+"username" : "",
 
-"phone" : 913078866,
+"phone" : ,
 
-"city" : "Coimbra",
+"city" : "",
 
-"street" : "Rua Cidade Dili, Bloco 13, 1º Direito",
+"street" : "",
 
-"zipcode": "3020-208",
+"zipcode": "",
 
-"password" : "1a2b3c4d",
+"password" : "",
 
-"first_name" : "Abdellahi",
+"first_name" : "",
 
-"last_name" : "Brahim",
+"last_name" : "",
 
-"email" : "uchihaabdellahi@gmail.com"
+"email" : ""
 
 }
 
